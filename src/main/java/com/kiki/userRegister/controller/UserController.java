@@ -33,6 +33,13 @@ public class UserController {
         return userService.findUserFromAddress(id,addressId);
     }
 
+    @PostMapping("/users")
+    public ResponseEntity<UserResponse> insert(@RequestBody UserRequest userRequest, UriComponentsBuilder uriBuilder) {
+        User user = userService.insert(userRequest.getName(), userRequest.getEmail(), userRequest.getAddressId(), userRequest.getAge());
+        URI location = uriBuilder.path("/users/{id}").buildAndExpand(user.getId()).toUri();
+        UserResponse body = new UserResponse("user created");
+        return ResponseEntity.created(location).body(body);
+    }
 
     @ExceptionHandler(value = UserNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleUserNotFoundException(
